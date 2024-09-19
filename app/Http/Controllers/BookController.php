@@ -41,13 +41,29 @@ class BookController extends Controller
             'author_id' => 'required|integer',
             'publisher_id' => 'required|integer',
             'published_year' => 'required|integer',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif',
             'categories' => 'required|array',
         ]);
+        // Instância do livro
+        $book = new Book();
+        $book->title = $request->input('title');
+        $book->author_id = $request->input('author_id');
+        $book->publisher_id = $request->input('publisher_id');
+        $book->published_year = $request->input('published_year');
+     
 
-        $book = Book::create($validatedData);
-        $book->categories()->attach($request->categories);
+        // Verifica se há uma imagem no request
+        if ($request->file('image')) {
+            // Armazena a imagem no diretório 'uploads' dentro de 'storage/app/public'
+            $imagePath = $request->file('image')->store('uploads', 'public');
+            $book->image_url = $imagePath;  // Salva o caminho da imagem no banco
+        }
 
-        return redirect()->route('books.index')->with('success', 'Livro criado com sucesso!');
+        // Salva o livro no banco de dados
+        $book->save();
+
+        // Redireciona de volta com uma mensagem de sucesso
+        return redirect()->back()->with('success', 'Livro cadastrado com sucesso!');
     }
 
     // Função para exibir o formulário de edição de um livro
@@ -61,22 +77,14 @@ class BookController extends Controller
     }
 
     // Função para atualizar um livro no banco de dados
-    public function update(Request $request, $id)
+    public function upload(Request $request)
     {
-        $validatedData = $request->validate([
-            'title' => 'required|string|max:255',
-            'author_id' => 'required|integer',
-            'publisher_id' => 'required|integer',
-            'published_year' => 'required|integer',
-            'categories' => 'required|array',
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
-        $book = Book::findOrFail($id);
-        $book->update($validatedData);
-        $book->categories()->sync($request->categories);
-
-        return redirect()->route('books.index')->with('success', 'Livro atualizado com sucesso!');
     }
+
+
 
     // Função para excluir um livro do banco de dados
     public function destroy($id)
