@@ -8,13 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 class Book extends Model
 {
     // Campos que podem ser atribuídos em massa
-    protected $fillable = ['title', 'author_id','image_url', 'publisher_id', 'published_year'];
+    protected $fillable = ['title', 'author_id', 'image_url', 'publisher_id', 'published_year'];
 
     // Relacionamento com Author: Um livro pertence a um autor
     public function author()
     {
         return $this->belongsTo(Author::class);
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
 
     // Relacionamento com Publisher: Um livro pertence a uma editora
     public function publisher()

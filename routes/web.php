@@ -8,6 +8,12 @@ use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PublisherController;
 
+use App\Http\Controllers\CommentController;
+
+Route::post('comments', [CommentController::class, 'store'])->name('comments.store');
+
+
+
 // Rotas para Books
 Route::resource('books', BookController::class);
 
